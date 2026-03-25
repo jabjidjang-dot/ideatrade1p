@@ -1,0 +1,263 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Main Container */
+.profile-page-container {
+  background-color: #111827; /* Dark Background */
+  min-height: 100vh;
+  padding: 40px 60px;
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+/* Tabs */
+.profile-tabs {
+  display: flex;
+  gap: 30px;
+  border-bottom: 1px solid #374151;
+  margin-bottom: 30px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 15px;
+  font-weight: 500;
+  padding-bottom: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  color: #ffffff;
+  border-bottom: 2px solid #3b82f6;
+}
+
+.tab-btn:hover {
+  color: #e5e7eb;
+}
+
+/* Layout Grid (Left Form / Right Sidebar) */
+.profile-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+/* --- Card Styles --- */
+.card {
+  background-color: #1f2937; /* Card Dark Background */
+  border: 1px solid #374151;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Left Column: Form */
+.form-card {
+  flex: 2; /* กินพื้นที่ 2 ส่วน */
+  padding-bottom: 20px;
+}
+
+.card-header {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 20px 24px;
+  margin: 0;
+  border-bottom: 1px solid #374151;
+}
+
+.form-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row.two-cols .form-group {
+  width: 50%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* Input Styling (Dark Theme) */
+.dark-input {
+  background-color: #374151; /* สีพื้นหลัง Input */
+  border: 1px solid #4b5563;
+  border-radius: 6px;
+  height: 42px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #ffffff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border 0.2s;
+}
+
+.dark-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.btn-save-changes {
+  background-color: #007bff; /* Bright Blue */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  width: fit-content;
+}
+
+.btn-save-changes:hover {
+  background-color: #2563eb;
+}
+
+/* Right Column: Sidebar */
+.sidebar-column {
+  flex: 1; /* กินพื้นที่ 1 ส่วน */
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Profile Summary Card */
+.profile-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+.avatar-circle {
+  width: 80px;
+  height: 80px;
+  background-color: #374151;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  border: 2px solid #3b82f6;
+}
+
+.user-fullname {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(16, 185, 129, 0.1); /* สีเขียวจางๆ */
+  color: #10b981;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.last-login-text {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Pro Plan Card */
+.plan-card {
+  padding: 20px;
+  border: 1px solid #facc15; /* Yellow Border */
+}
+
+.plan-header {
+  color: #facc15;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.plan-detail {
+  font-size: 13px;
+  color: #d1d5db;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.progress-bar-bg {
+  height: 6px;
+  background-color: #4b5563;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #facc15;
+  border-radius: 3px;
+}
+
+.days-left {
+  text-align: right;
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Animation */
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .profile-layout {
+    flex-direction: column;
+  }
+  .form-row.two-cols {
+    flex-direction: column;
+  }
+  .form-row.two-cols .form-group {
+    width: 100%;
+  }
+}

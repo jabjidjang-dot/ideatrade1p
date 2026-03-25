@@ -1,0 +1,31 @@
+:root {
+  /* ===== Background ===== */
+  --bg-main: #2f2f2f;
+  --bg-page: #3a3a3a;
+
+  --bg-card: #0b1220;
+  --bg-card-soft: #0f172a;
+
+  /* ===== Gradient ===== */
+  --gradient-card: linear-gradient(
+    135deg,
+    #0b1220 0%,
+    #0f172a 50%,
+    #020617 100%
+  );
+
+  /* ===== Primary Colors ===== */
+  --primary: #0284c7;        /* ปุ่ม Sign in */
+  --primary-hover: #0369a1;
+
+  --secondary: #34d399;      /* Try free */
+  --secondary-hover: #10b981;
+
+  /* ===== Text ===== */
+  --text-main: #ffffff;
+  --text-soft: #cbd5e1;
+  --text-muted: #94a3b8;
+
+  /* ===== Border ===== */
+  --border-soft: rgba(255,255,255,0.15);
+}

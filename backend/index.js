@@ -1,0 +1,87 @@
+const express = require("express");
+const cors = require("cors");
+const admin = require("firebase-admin");
+
+// 1. สร้างตัวแปร app สำหรับเปิดเซิร์ฟเวอร์
+const app = express();
+
+// 2. ตั้งค่าให้เซิร์ฟเวอร์รับ-ส่งข้อมูลกับหน้าบ้าน (React) ได้
+app.use(cors({ origin: true }));
+app.use(express.json()); // บังคับให้อ่านข้อมูลแบบ JSON ได้
+
+// 🌟🌟 3. นำเข้าไฟล์กุญแจลับ (อย่าลืมเอาไฟล์ firebase-key.json มาไว้ในโฟลเดอร์เดียวกันนะครับ)
+const serviceAccount = require("./firebase-key.json"); 
+
+// 🌟🌟 4. ตั้งค่าเชื่อมต่อ Firebase ให้ใช้กุญแจจริง
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+// กำหนดตัวแปรสำหรับเรียกใช้ Firestore
+const db = admin.firestore();
+
+// ==========================================
+// API: สมัครสมาชิก (สร้างบัญชี Auth และบันทึกลง Firestore)
+// ==========================================
+app.post('/api/register', async (req, res) => {
+  try {
+    // รับข้อมูลที่หน้าบ้านส่งมา
+    const { email, firstName, lastName, phone } = req.body;
+
+    // 1. เช็คก่อนว่ามีอีเมลนี้ใน Firestore แล้วหรือยัง
+    const usersRef = db.collection('users');
+    const snapshot = await usersRef.where('email', '==', email).get();
+    
+    if (!snapshot.empty) {
+      return res.status(400).json({ error: "มีอีเมลนี้ในระบบแล้ว กรุณาใช้ชื่ออื่น" });
+    }
+
+    // 2. สร้างบัญชีผู้ใช้ในแท็บ Firebase Auth (เพื่อให้ล็อกอินได้จริง)
+    let userRecord;
+    try {
+      userRecord = await admin.auth().createUser({
+        email: email,
+        // ถ้าหน้าเว็บมีช่องให้กรอกรหัสผ่านด้วย ให้เปิดคอมเมนต์บรรทัดล่างนี้ครับ
+        // password: req.body.password 
+      });
+    } catch (authErr) {
+      if (authErr.code === 'auth/email-already-exists') {
+        return res.status(400).json({ error: "อีเมลนี้ถูกใช้งานในระบบแล้ว" });
+      }
+      throw authErr; // ถ้าพังด้วยสาเหตุอื่น ให้โยน error ออกไป
+    }
+
+    // 3. กำหนดวันหมดอายุสมาชิก (ให้ใช้งานฟรี 30 วัน)
+    const expireDate = new Date();
+    expireDate.setDate(expireDate.getDate() + 30); 
+
+    // 4. เตรียมข้อมูลที่จะบันทึกลงฐานข้อมูล
+    const newUser = {
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      memberExpireAt: expireDate,
+      uid: userRecord.uid, // เก็บ UID เอาไว้ใช้ยืนยันตัวตน
+      createdAt: admin.firestore.FieldValue.serverTimestamp() // ใช้เวลามาตรฐานของ Server
+    };
+
+    // 5. บันทึกลงตาราง users ใน Firestore โดยตั้งชื่อ Document ให้ตรงกับ UID ของ Auth!
+    await db.collection('users').doc(userRecord.uid).set(newUser);
+
+    console.log("✅ สมัครสมาชิกสำเร็จ! โพรไฟล์ถูกสร้างด้วย UID:", userRecord.uid);
+    res.json({ message: "สมัครสมาชิกสำเร็จและบันทึกลงฐานข้อมูลแล้ว!" });
+
+  } catch (error) {
+    console.error("❌ Error saving to Firebase:", error);
+    res.status(500).json({ error: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
+  }
+});
+
+// ==========================================
+// สั่งให้เซิร์ฟเวอร์เปิดทำงานที่ Port 8000
+// ==========================================
+const PORT = 8000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+});

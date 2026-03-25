@@ -1,0 +1,272 @@
+/* Rocket.css */
+
+/* 1. เปลี่ยนชื่อ wrapper และปรับความสูงให้เต็มพ่อแม่ (Parent) แทนเต็มจอ */
+.rocket-wrapper {
+  width: 100%;
+  height: 100%;       /* เต็มความสูงของกล่องด้านขวา */
+  background-color: transparent; /* สีพื้นหลัง */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* ให้จรวดอยู่ด้านล่าง */
+  overflow: hidden;
+  border-radius: 0 2rem 2rem 0;
+   position: relative; /* (Option) ปรับมุมขวาให้มนรับกับ Card */
+}
+
+/* 2. ปรับ container ให้ยืดหยุ่น */
+.scene-container {
+  position: relative;
+  width: 100%;        /* ให้กว้างเต็มพื้นที่ */
+  max-width: 600px;   /* แต่ไม่เกิน 600px (กันจรวดลอยห่างเกิน) */
+  height: 100%;       /* สูงเต็ม */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 20px;
+}
+
+
+/* --- Rocket Group --- */
+.rocket-group {
+  position: absolute;
+  bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  animation: hoverFloat 0.8s ease-in-out infinite alternate;
+}
+
+.rocket-body {
+  position: relative;
+  width: 80px;
+  height: 150px;
+  background-color: #e6e6e6;
+  border-radius: 50% 50% 12px 12px;
+  z-index: 10;
+  box-shadow: inset -10px 0 20px rgba(0,0,0,0.1);
+  animation: shake 0.04s infinite; 
+}
+
+.window {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  background-color: #c0392b;
+  border: 5px solid #bdc3c7;
+  border-radius: 50%;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.fin {
+  position: absolute;
+  bottom: 15px;
+  width: 25.2px;
+  height: 55px;
+  background-color: #c0392b;
+  z-index: -1;
+}
+.fin-left { left: -25px; border-radius: 30px 0 10px 10px; }
+.fin-right { right: -25px; border-radius: 0 30px 10px 10px; }
+
+.nozzle {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 45px;
+  height: 15px;
+  background-color: #7f8c8d;
+  border-radius: 0 0 5px 5px;
+}
+
+.smoke-trail {
+  width: 34px;
+  height: 140px; 
+  background: linear-gradient(to bottom, 
+    rgba(100, 100, 100, 0.9) 0%, 
+    rgba(200, 200, 200, 0.5) 50%, 
+    rgba(255, 255, 255, 0) 100%
+  );
+  margin-top: -5px;
+  z-index: 5;
+  animation: trailPulse 0.1s infinite alternate;
+}
+
+/* --- Clouds --- */
+.cloud-base {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 180px;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.cloud {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.c1 { 
+  width: 130px; height: 130px; 
+  bottom: 30px; left: 50%; 
+  transform: translateX(-50%); 
+  z-index: 20; 
+  animation: cloudBreathCenter 2s infinite ease-in-out alternate;
+} 
+
+.c2 { 
+  width: 110px; height: 110px; 
+  bottom: 40px; left: calc(50% - 100px);
+  z-index: 15; 
+  animation: cloudBreathSide 2.5s infinite ease-in-out alternate, 
+             cloudFade 4s infinite ease-in-out;
+  animation-delay: 0s;
+}
+
+.c3 { 
+  width: 110px; height: 110px; 
+  bottom: 40px; left: calc(50% + 5px);
+  z-index: 15; 
+  animation: cloudBreathSide 2.2s infinite ease-in-out alternate,
+             cloudFade 4s infinite ease-in-out;
+  animation-delay: 2s;
+}
+
+.c4 { 
+  width: 90px; height: 90px; 
+  bottom: 20px; left: calc(50% - 130px); 
+  z-index: 10; background-color: #f0f0f0; 
+  animation: cloudBreathSide 3s infinite ease-in-out alternate,
+             cloudFade 3.5s infinite ease-in-out;
+  animation-delay: 0.5s;
+}
+
+.c5 { 
+  width: 90px; height: 90px; 
+  bottom: 20px; left: calc(50% + 60px); 
+  z-index: 10; background-color: #f0f0f0; 
+  animation: cloudBreathSide 2.8s infinite ease-in-out alternate,
+             cloudFade 3.5s infinite ease-in-out;
+  animation-delay: 1.5s;
+}
+
+/* --- Keyframes --- */
+@keyframes hoverFloat {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-20px); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+@keyframes trailPulse {
+  0% { opacity: 0.8; width: 34px; }
+  100% { opacity: 1; width: 36px; }
+}
+@keyframes cloudBreathCenter {
+  0% { transform: translateX(-50%) scale(1); }
+  100% { transform: translateX(-50%) scale(1.1); }
+}
+@keyframes cloudBreathSide {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+@keyframes cloudFade {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.2; transform: scale(0.8); }
+}
+
+.star {
+  position: absolute; background-color: white; width: 3px; height: 3px; border-radius: 50%; opacity: 0.5; animation: twinkle 4s infinite;
+}
+@keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+/* ============================= */
+/* 📱 Tablet (<=1024px) */
+/* ============================= */
+@media (max-width: 1024px) {
+
+  .scene-container {
+    max-width: 100%;
+    padding-bottom: 10px;
+  }
+
+  .rocket-group {
+    bottom: 80px;
+    transform: scale(0.85);
+  }
+
+  .rocket-body {
+    width: 70px;
+    height: 130px;
+  }
+
+  .window {
+    width: 28px;
+    height: 28px;
+  }
+
+  .fin {
+    width: 22px;
+    height: 50px;
+  }
+
+  .nozzle {
+    width: 40px;
+  }
+
+  .smoke-trail {
+    height: 110px;
+    width: 28px;
+  }
+
+  .cloud-base {
+    height: 140px;
+  }
+
+  .c1 { width: 110px; height: 110px; }
+  .c2, .c3 { width: 95px; height: 95px; }
+  .c4, .c5 { width: 75px; height: 75px; }
+
+  .star {
+    width: 2px;
+    height: 2px;
+  }
+}
+
+
+/* ============================= */
+/* 📱 Mobile (<=640px) */
+/* ============================= */
+@media (max-width: 640px) {
+
+  .rocket-wrapper {
+    border-radius: 0 0 2rem 2rem; /* โค้งล่างแทน */
+    align-items: center;
+  }
+
+  .rocket-group {
+    bottom: 50px;
+    transform: scale(0.75);
+  }
+
+  .cloud-base {
+    height: 110px;
+  }
+
+  /* ลดแรง animation ไม่ให้ล้น */
+  @keyframes hoverFloat {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-10px); }
+  }
+}

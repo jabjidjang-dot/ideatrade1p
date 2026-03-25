@@ -1,0 +1,13 @@
+firebase-key.json
+node_modules
+# Firebase secrets
+service-account.json
+service-account.json.json
+
+# Logs
+*.log
+firebase-debug.log
+
+# Environments and dependencies
+.env
+node_modules/

@@ -1,0 +1,196 @@
+import { useEffect, useRef, useState } from "react";
+import { auth, db } from "@/firebase"; 
+import { signInWithCustomToken } from "firebase/auth";
+import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+
+// ดึง URL ของ Backend จาก Environment Variable
+// ถ้าไม่มี (เช่น รันในเครื่อง) จะใช้ localhost:5000 แทนอัตโนมัติ
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+export default function OtpModal({ open, onClose, onSuccess, email }) { 
+  const OTP_LENGTH = 6;
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
+  const [status, setStatus] = useState("idle"); // idle | error | success | loading
+  const [timeLeft, setTimeLeft] = useState(300);
+  const [resent, setResent] = useState(false);
+  const [showTip, setShowTip] = useState(false);
+
+  const hiddenInputRef = useRef(null);
+
+  /* ⏱ Timer Logic */
+  useEffect(() => {
+    if (!open) return;
+    setTimeLeft(300);
+    setResent(false);
+    setOtp(Array(OTP_LENGTH).fill(""));
+    setStatus("idle");
+
+    const interval = setInterval(() => {
+      setTimeLeft((t) => (t <= 1 ? 0 : t - 1));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [open]);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  /* ✅ Verify OTP Logic + Data Merging */
+  const verifyOtp = async (code) => {
+    setStatus("loading");
+    try {
+      // 🟢 แก้ไข: ใช้ Template Literal เชื่อม API_URL เข้ากับ Path
+      const response = await fetch(`${API_URL}/api/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email: email.trim().toLowerCase(), 
+          otp: code 
+        })
+      });
+
+      const data = await response.json(); 
+      
+      if (!response.ok || !data.success) {
+         throw new Error(data.error || "Verification failed"); 
+      }
+
+      // 1. ล็อกอินเข้าสู่ระบบจริงเพื่อเอา UID
+      const userCredential = await signInWithCustomToken(auth, data.token);
+      const user = userCredential.user;
+
+      // 2. กระบวนการย้ายข้อมูลจาก [ชื่อไฟล์เป็น Email] -> [ชื่อไฟล์เป็น UID]
+      if (user) {
+        const formattedEmail = email.trim().toLowerCase();
+        const emailDocRef = doc(db, "users", formattedEmail);
+        const emailDocSnap = await getDoc(emailDocRef);
+
+        if (emailDocSnap.exists()) {
+          const userData = emailDocSnap.data();
+          const uidDocRef = doc(db, "users", user.uid);
+          
+          await setDoc(uidDocRef, userData, { merge: true });
+          await deleteDoc(emailDocRef);
+          console.log("Successfully merged user data from Email to UID");
+        }
+      }
+
+      setStatus("success");
+      setTimeout(() => onSuccess(), 800);
+      
+    } catch (error) {
+      console.error("🔥 Verify Error:", error.message); 
+      setStatus("error");
+      alert("เกิดข้อผิดพลาด: " + error.message); 
+    }
+  };
+
+  /* 📩 Resend OTP Logic */
+  const resendOtp = async () => {
+    setOtp(Array(OTP_LENGTH).fill(""));
+    setStatus("idle");
+    setTimeLeft(300);
+    setResent(true);
+    hiddenInputRef.current?.focus();
+    try {
+      // 🟢 แก้ไข: ใส่ API_URL นำหน้า Path เช่นกัน
+      await fetch(`${API_URL}/ideatrade-9548f/us-central1/requestOTP`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim().toLowerCase() })
+      });
+    } catch (err) {
+      console.error("Resend error:", err);
+    }
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-md rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 sm:p-8 shadow-2xl">
+        
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-6">
+          <h3 className="text-xl font-bold">Fill your OTP</h3>
+          <div className="relative" onMouseEnter={() => setShowTip(true)} onMouseLeave={() => setShowTip(false)}>
+            <span className="w-5 h-5 rounded-full border border-white/40 flex items-center justify-center text-xs cursor-pointer opacity-60 hover:opacity-100">?</span>
+            {showTip && (
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-64 p-3 rounded-lg text-xs text-gray-200 bg-slate-700 shadow-xl z-50">
+                OTP is a 6-digit key sent to your email.
+              </div>
+            )}
+          </div>
+          <button onClick={onClose} className="ml-auto text-white/40 hover:text-white transition-colors">✕</button>
+        </div>
+
+        {/* OTP Input Group */}
+        <div className="relative flex justify-center gap-2 sm:gap-3 mb-6">
+          <input
+            ref={hiddenInputRef}
+            type="text"
+            inputMode="numeric"
+            value={otp.join("")}
+            onChange={(e) => {
+              const value = e.target.value.replace(/\D/g, "");
+              if (value.length <= OTP_LENGTH) {
+                const newOtp = value.split("").concat(Array(OTP_LENGTH - value.length).fill(""));
+                setOtp(newOtp);
+                if (value.length === OTP_LENGTH) { verifyOtp(value); }
+              }
+            }}
+            maxLength={OTP_LENGTH}
+            disabled={status === "loading" || status === "success"}
+            className="absolute inset-0 w-full h-full bg-transparent opacity-0 text-transparent caret-transparent cursor-text z-20"
+          />
+
+          {otp.map((digit, i) => (
+            <div
+              key={i}
+              className={`
+                flex items-center justify-center
+                w-10 h-12 sm:w-12 sm:h-14 
+                text-xl font-bold 
+                rounded-xl transition-all duration-200
+                ${status === "error" ? "bg-red-900/50 border-2 border-red-500 text-red-200" : 
+                  status === "success" ? "bg-green-600 border-2 border-green-400" : 
+                  status === "loading" ? "bg-slate-700 animate-pulse" : 
+                  "bg-slate-700 border-2 border-slate-600 shadow-inner"}
+                ${otp.join("").length === i && status === "idle" ? "border-sky-400 bg-slate-600" : ""}
+              `}
+            >
+              {digit}
+            </div>
+          ))}
+        </div>
+
+        {/* Info Section */}
+        <div className="space-y-2 mb-6 text-center">
+          <p className={`text-sm font-medium ${status === "error" ? "text-red-400 animate-bounce" : "text-slate-300"}`}>
+            {status === "error" ? "Invalid OTP, please try again." : 
+             status === "loading" ? "Checking code..." : `Expires in: ${formatTime(timeLeft)}`}
+          </p>
+          <p className={`text-xs ${resent ? "text-sky-400 font-bold" : "text-slate-400"}`}>
+            {resent ? "✨ OTP has been resent!" : `Sent to: ${email}`}
+          </p>
+        </div>
+
+        <div className="border-t border-white/10 pt-4 text-center">
+          <p className="text-xs text-slate-500">
+            Don't get the code?{" "}
+            <button 
+              onClick={resendOtp} 
+              disabled={status === "loading" || timeLeft > 270}
+              className={`underline transition-colors ${timeLeft > 270 ? "text-slate-600 cursor-not-allowed" : "text-sky-400 hover:text-sky-300"}`}
+            >
+              Send again
+            </button>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

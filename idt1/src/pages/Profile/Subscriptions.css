@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- Main Container --- */
+.sub-page-container {
+  background-color: #111827;
+  min-height: 100vh;
+  padding: 40px 60px;
+  font-family: 'Inter', sans-serif;
+  color: #ffffff;
+}
+
+/* --- Header (เจาะจงเฉพาะใน sub-page-container) --- */
+.sub-page-container .sub-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #ffffff;
+}
+
+.sub-page-container .sub-summary {
+  color: #9ca3af;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+/* --- Utility Classes (บังคับให้มีผลแค่ในหน้านี้) --- */
+.sub-page-container .bold, 
+.sub-page-container .font-bold {
+  font-weight: 700;
+  color: #ffffff; 
+}
+
+.sub-page-container .ml-4 {
+  margin-left: 20px;
+}
+
+/* --- Toolbar --- */
+.sub-page-container .sub-toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.sub-page-container .search-wrapper {
+  background-color: #374151;
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 6px;
+  width: 70%;
+  border: 1px solid #4b5563;
+}
+
+.sub-page-container .search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  width: 100%;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.sub-page-container .search-input::placeholder {
+  color: #9ca3af;
+}
+
+.sub-page-container .btn-add-tool {
+  background-color: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sub-page-container .btn-add-tool:hover {
+  background-color: #2563eb;
+}
+
+/* --- Table Grid --- */
+.sub-page-container .sub-table-header, 
+.sub-page-container .sub-card-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 2fr 1fr 1fr 1.5fr; 
+  align-items: center;
+  padding: 0 24px;
+}
+
+.sub-page-container .sub-table-header {
+  color: #9ca3af;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sub-page-container .section-title {
+  font-size: 14px;
+  color: #e5e7eb;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin: 30px 0 16px 0;
+  letter-spacing: 0.5px;
+}
+
+.sub-page-container .sub-card-row {
+  background-color: #1f2937;
+  height: 70px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #ffffff;
+  border: 1px solid #374151;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.sub-page-container .sub-card-row:hover {
+  border-color: #4b5563;
+}
+
+/* --- Status & Actions --- */
+.sub-page-container .status-indicator {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sub-page-container .status-text {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.sub-page-container .status-date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.sub-page-container .btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.sub-page-container .btn-action:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.sub-page-container .btn-action.renew {
+  color: #3b82f6;
+  font-weight: 600;
+  margin-right: 16px;
+}
+
+.sub-page-container .btn-action.pay {
+  color: #facc15;
+  font-weight: 600;
+}
